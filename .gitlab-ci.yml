@@ -1,0 +1,33 @@
+default:
+  image: debian:trixie-slim
+
+stages:
+  - build
+
+build rk3588:
+  stage: build
+  before_script:
+    - apt update
+    - apt install -y build-essential
+                     crossbuild-essential-arm64
+    - export CROSS_COMPILE=aarch64-linux-gnu-
+    - export ARCH=arm64
+  script:
+    - make PLAT=rk3588 bl31
+  artifacts:
+    paths:
+      - build/rk3588/release/bl31/bl31.elf
+
+build rk3576:
+  stage: build
+  before_script:
+    - apt update
+    - apt install -y build-essential
+                     crossbuild-essential-arm64
+    - export CROSS_COMPILE=aarch64-linux-gnu-
+    - export ARCH=arm64
+  script:
+    - make PLAT=rk3576 bl31
+  artifacts:
+    paths:
+      - build/rk3576/release/bl31/bl31.elf
