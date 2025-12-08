@@ -94,8 +94,8 @@ unsigned long plat_scmi_clock_get_rate(unsigned int agent_id,
 		rate = clock->clk_ops->get_rate(clock);
 
 	/* return cur_rate if no get_rate ops or get_rate return 0 */
-	if (rate == 0)
-		rate = clock->cur_rate;
+	//if (rate == 0)
+	//	rate = clock->cur_rate;
 
 	return rate;
 }
