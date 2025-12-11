@@ -802,6 +802,9 @@ static unsigned long clk_scmi_dsu_get_rate(rk_scmi_clock_t *clock)
 
 	src = mmio_read_32(DSUCRU_BASE + CRU_CLKSEL_CON(1)) & 0x1;
 	if (src != 0) {
+		// pd_dsu_dwn_pwr_repair_stat (bit0) must be 'Complete' (1) via PMU_BISR_STS5
+		if (!(mmio_read_32(PMU0_BASE + PMU_BISR_STS(5)) & 0x1))
+			return SCMI_DENIED;
 		udelay(2);
 		return (mmio_read_32(DSUGRF_BASE + RK3588_DSU_PVTPLL_STATUS) & 0x3FFF) * MHz;
 	} else {
@@ -860,6 +863,9 @@ static int clk_dsu_set_rate(unsigned long rate, enum pll_type_sel type)
 
 	/* set pvtpll */
 	if (PVTPLL_NEED(type, pvtpll->length)) {
+		// pd_dsu_dwn_pwr_repair_stat (bit0) must be 'Complete' (1) via PMU_BISR_STS5
+		if (!(mmio_read_32(PMU0_BASE + PMU_BISR_STS(5)) & 0x1))
+			return SCMI_DENIED;
 		/* set clock gating interval */
 		mmio_write_32(DSUGRF_BASE + RK3588_DSU_PVTPLL_CON2,
 			      0x00040000);
@@ -925,6 +931,9 @@ static unsigned long clk_scmi_gpu_get_rate(rk_scmi_clock_t *clock)
 	int div, src;
 
 	if ((mmio_read_32(CRU_BASE + CRU_CLKSEL_CON(158)) & 0x4000) != 0) {
+		// pd_gpu_bisr_pwr_repair_stat (bit1) must be 'Complete' (1) via PMU_BISR_STS4
+		if (!(mmio_read_32(PMU0_BASE + PMU_BISR_STS(4)) & 0x2))
+			return SCMI_DENIED;
 		udelay(2);
 		return (mmio_read_32(GPUGRF_BASE + RK3588_GPU_PVTPLL_STATUS) & 0x3FFF) * MHz;
 	} else {
@@ -963,6 +972,9 @@ static int clk_gpu_set_rate(unsigned long rate, enum pll_type_sel type)
 		return SCMI_INVALID_PARAMETERS;
 
 	if (PVTPLL_NEED(type, pvtpll->length)) {
+		// pd_gpu_bisr_pwr_repair_stat (bit1) must be 'Complete' (1) via PMU_BISR_STS4
+		if (!(mmio_read_32(PMU0_BASE + PMU_BISR_STS(4)) & 0x2))
+			return SCMI_DENIED;
 		/* set clock gating interval */
 		mmio_write_32(GPUGRF_BASE + RK3588_GPU_PVTPLL_CON2,
 			      0x00040000);
@@ -1024,6 +1036,9 @@ static unsigned long clk_scmi_npu_get_rate(rk_scmi_clock_t *clock)
 	int div, src;
 
 	if ((mmio_read_32(CRU_BASE + CRU_CLKSEL_CON(74)) & 0x1) != 0) {
+		// pd_nputop_dwn_pwr_repair_stat (bit2) must be 'Complete' (1) via PMU_BISR_STS4
+		if (!(mmio_read_32(PMU0_BASE + PMU_BISR_STS(4)) & 0x4))
+			return SCMI_DENIED;
 		udelay(2);
 		return (mmio_read_32(NPUGRF_BASE + RK3588_NPU_PVTPLL_STATUS) & 0x3FFF) * MHz;
 	} else {
@@ -1063,6 +1078,9 @@ static int clk_npu_set_rate(unsigned long rate, enum pll_type_sel type)
 		return SCMI_INVALID_PARAMETERS;
 
 	if (PVTPLL_NEED(type, pvtpll->length)) {
+		// pd_nputop_dwn_pwr_repair_stat (bit2) must be 'Complete' (1) via PMU_BISR_STS4
+		if (!(mmio_read_32(PMU0_BASE + PMU_BISR_STS(4)) & 0x4))
+			return SCMI_DENIED;
 		/* set clock gating interval */
 		mmio_write_32(NPUGRF_BASE + RK3588_NPU_PVTPLL_CON2,
 			      0x00040000);

@@ -116,6 +116,9 @@ enum cru_mode_con00 {
 #define PVTM_STATUS(i)			(0x80 + (i) * 4)
 #define PVTM_CALC_CNT			0x200
 
+/* PMU */
+#define PMU_BISR_STS(i)		((i) * 0x4 + 0x8280)
+
 enum pvtm_con0 {
 	pvtm_start = 0,
 	pvtm_osc_en = 1,
